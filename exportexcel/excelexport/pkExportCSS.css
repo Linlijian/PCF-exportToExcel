@@ -1,7 +1,8 @@
 .pkButton:hover {
-    background-color: #C88B1E;
+    background-color: var(--hover);
 }
 .pkButton {
-    border-width:0px;
-    background-color: #F5B84D;
+    border-width: 0px;
+    //background-color: #F5B84D;
+    background-color: var(--color);
 }

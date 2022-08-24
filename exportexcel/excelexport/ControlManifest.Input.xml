@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest>
-  <control namespace="contoso" constructor="excelexport" version="0.0.3" display-name-key="excelexport" description-key="excelexport description" control-type="standard">
+  <control namespace="contoso" constructor="excelexport" version="2.0.0" display-name-key="excelexport" description-key="excelexport description" control-type="standard">
     <!-- property node identifies a specific, configurable piece of data that the control expects from CDS -->
-    <property name="dataToExport" display-name-key="Property_Display_Key" description-key="Property_Desc_Key" of-type="SingleLine.Text" usage="bound" required="true" />
-    <property name="ButtonText" display-name-key="Property_ButtonText" description-key="Property_ButtonText" of-type="SingleLine.Text" usage="bound" required="true" default-value = "Export to Excel" />
-    <property name="FileName" display-name-key="Property_FileName" description-key="Property_FileName" of-type="SingleLine.Text" usage="bound" required="true" default-value = "exportResult"/>
-    <property name="ButtonHeight" display-name-key="Property_ButtonHeight" description-key="Property_ButtonHeight" of-type="SingleLine.Text" usage="bound" required="true" default-value = "60"/>
-    <property name="TextColor" display-name-key="Property_TextColor" description-key="Property_TextColor" of-type="SingleLine.Text" usage="bound" required="true" default-value="white"/>
-    <property name="TextSize" display-name-key="Property_TextSize" description-key="Property_TextSize" of-type="SingleLine.Text" usage="bound" required="true" default-value="15px"/>
-    <property name="Font" display-name-key="Property_Font" description-key="Property_Font" of-type="SingleLine.Text" usage="bound" required="true" default-value="verdana"/>
-    <property name="BackgroundColor" display-name-key="Property_BackgroundColor" description-key="Property_BackgroundColor" of-type="SingleLine.Text" usage="bound" required="true" default-value="Purple"/>
-    <property name="pkBorderRadius" display-name-key="Property_borderRadius" description-key="Property_borderRadius" of-type="SingleLine.Text" usage="bound" required="true" default-value="10px"/>
-    <property name="pkPaddingRight" display-name-key="Property_PaddingRight" description-key="Property_PaddingRight" of-type="SingleLine.Text" usage="bound" required="true" default-value="10px"/>
+    <property name="pkJsonformatData" display-name-key="PikunJsonformatData" description-key="PikunJsonformatData" of-type="SingleLine.Text" usage="bound" required="true" />
+    <property name="pkButtonText" display-name-key="PikunButtonText" description-key="PikunButtonText" of-type="SingleLine.Text" usage="bound" required="true" default-value = "Export to Excel" />
+    <property name="pkFileName" display-name-key="PikunFileName" description-key="PikunFileName" of-type="SingleLine.Text" usage="bound" required="true" default-value = "exportResult"/>
+    <property name="pkButtonHeight" display-name-key="PikunButtonHeight" description-key="PikunButtonHeight" of-type="SingleLine.Text" usage="bound" required="true" default-value = "60"/>
+    <property name="pkTextColor" display-name-key="PikunTextColor" description-key="PikunTextColor" of-type="SingleLine.Text" usage="bound" required="true" default-value="white"/>
+    <property name="pkTextSize" display-name-key="PikunTextSize" description-key="PikunTextSize" of-type="SingleLine.Text" usage="bound" required="true" default-value="15px"/>
+    <property name="pkFont" display-name-key="PikunFont" description-key="PikunFont" of-type="SingleLine.Text" usage="bound" required="true" default-value="verdana"/>
+    <!--<property name="BackgroundColor" display-name-key="Property_BackgroundColor" description-key="Property_BackgroundColor" of-type="SingleLine.Text" usage="bound" required="true" default-value="Purple"/>-->
+    <property name="pkBorderRadius" display-name-key="PikunBorderRadius" description-key="PikunBorderRadius" of-type="SingleLine.Text" usage="bound" required="true" default-value="10px"/>
+    <property name="pkPaddingRight" display-name-key="PikunPaddingRight" description-key="PikunPaddingRight" of-type="SingleLine.Text" usage="bound" required="true" default-value="10px"/>
+    
+    <property name="pkButtonColor" display-name-key="PikunButtonColor" description-key="PikunButtonColor" of-type="SingleLine.Text" usage="bound" required="true" default-value="#F5B84D"/>
+    <property name="pkButtonColorHover" display-name-key="PikunButtonColorHover" description-key="PikunButtonColorHover" of-type="SingleLine.Text" usage="bound" required="true" default-value="#C88B1E"/>
     <!-- 
       Property node's of-type attribute can be of-type-group attribute. 
       Example:

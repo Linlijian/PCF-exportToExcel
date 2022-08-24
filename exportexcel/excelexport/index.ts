@@ -1,6 +1,7 @@
 import {IInputs, IOutputs} from "./generated/ManifestTypes";
 import { Injectable } from '@angular/core';
-import * as XLSX from 'xlsx';
+//import * as XLSX from 'xlsx';
+import * as XLSX from 'sheetjs-style'
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
@@ -33,26 +34,26 @@ export class excelexport implements ComponentFramework.StandardControl<IInputs, 
 		// Add control initialization code
 		this.button = document.createElement("button");
 		// Get the localized string from localized string
-		if(context.parameters.ButtonText.raw)
+		if(context.parameters.pkButtonText.raw)
 		{
-			this.button.innerHTML = context.parameters.ButtonText.raw;
+			this.button.innerHTML = context.parameters.pkButtonText.raw;
 		}
 		this.button.classList.add("SimpleIncrement_Button_Style");
 		this.button.classList.add("pkButton");
 		//if(context.parameters.BackgroundColor.raw){
 		//	this.button.style.backgroundColor = context.parameters.BackgroundColor.raw;
 		//}; 
-		if(context.parameters.TextColor.raw)
+		if(context.parameters.pkTextColor.raw)
 		{
-			this.button.style.color = context.parameters.TextColor.raw;
+			this.button.style.color = context.parameters.pkTextColor.raw;
 		};
-		if(context.parameters.TextSize.raw)
+		if(context.parameters.pkTextSize.raw)
 		{
-			this.button.style.fontSize = context.parameters.TextSize.raw;
+			this.button.style.fontSize = context.parameters.pkTextSize.raw;
 		};
-		if(context.parameters.Font.raw)
+		if(context.parameters.pkFont.raw)
 		{
-			this.button.style.fontFamily = context.parameters.Font.raw;
+			this.button.style.fontFamily = context.parameters.pkFont.raw;
 		};
 
 		//new
@@ -63,6 +64,14 @@ export class excelexport implements ComponentFramework.StandardControl<IInputs, 
 			this.button.style.paddingRight = context.parameters.pkPaddingRight.raw;;
 		};
 
+		//solution v.2
+		if (context.parameters.pkButtonColor.raw) {
+			this.button.style.setProperty('--color', context.parameters.pkButtonColor.raw);
+		};
+		if (context.parameters.pkButtonColorHover.raw) {
+			this.button.style.setProperty('--hover', context.parameters.pkButtonColorHover.raw);
+		};
+
 		this.button.style.textAlign = "right";
 
 		this._notifyOutputChanged = notifyOutputChanged;
@@ -70,9 +79,9 @@ export class excelexport implements ComponentFramework.StandardControl<IInputs, 
 		this.button.addEventListener("click", this.onButtonClick.bind(this));
 		// Adding the label and button created to the container DIV.
 		this.button.style.width = container.style.width;
-		if(context.parameters.ButtonHeight.raw)
+		if(context.parameters.pkButtonHeight.raw)
 		{
-			this.button.style.height = context.parameters.ButtonHeight.raw + "px";
+			this.button.style.height = context.parameters.pkButtonHeight.raw + "px";
 		};
 
 		container.id = "containerid";
@@ -87,36 +96,36 @@ export class excelexport implements ComponentFramework.StandardControl<IInputs, 
 	public updateView(context: ComponentFramework.Context<IInputs>): void
 	{
 		// Add code to update control view
-		if(context.parameters.dataToExport.raw)
+		if(context.parameters.pkJsonformatData.raw)
 		{
-			this.printable = context.parameters.dataToExport.raw;
+			this.printable = context.parameters.pkJsonformatData.raw;
 		};
-		if( context.parameters.FileName.raw)
+		if( context.parameters.pkFileName.raw)
 		{
-		this.filename = context.parameters.FileName.raw+".xlsx";
+		this.filename = context.parameters.pkFileName.raw+".xlsx";
 		};
-		if(context.parameters.ButtonText.raw)
+		if(context.parameters.pkButtonText.raw)
 		{
-			this.button.innerHTML = context.parameters.ButtonText.raw;
+			this.button.innerHTML = context.parameters.pkButtonText.raw;
 		};
 		//if(context.parameters.BackgroundColor.raw){
 		//	this.button.style.backgroundColor = context.parameters.BackgroundColor.raw;
 		//}; 
-		if(context.parameters.TextColor.raw)
+		if(context.parameters.pkTextColor.raw)
 		{
-			this.button.style.color = context.parameters.TextColor.raw;
+			this.button.style.color = context.parameters.pkTextColor.raw;
 		};
-		if(context.parameters.TextSize.raw)
+		if(context.parameters.pkTextSize.raw)
 		{
-			this.button.style.fontSize = context.parameters.TextSize.raw;
+			this.button.style.fontSize = context.parameters.pkTextSize.raw;
 		};
-		if(context.parameters.Font.raw)
+		if(context.parameters.pkFont.raw)
 		{
-			this.button.style.fontFamily = context.parameters.Font.raw;
+			this.button.style.fontFamily = context.parameters.pkFont.raw;
 		};
-		if(context.parameters.ButtonHeight.raw)
+		if(context.parameters.pkButtonHeight.raw)
 		{
-			this.button.style.height = context.parameters.ButtonHeight.raw + "px";
+			this.button.style.height = context.parameters.pkButtonHeight.raw + "px";
 		};
 
 		//new
@@ -126,13 +135,98 @@ export class excelexport implements ComponentFramework.StandardControl<IInputs, 
 		if (context.parameters.pkPaddingRight.raw) {
 			this.button.style.paddingRight = context.parameters.pkPaddingRight.raw;;
 		};
+
+		//solution v.2
+		if (context.parameters.pkButtonColor.raw) {
+			this.button.style.setProperty('--color', context.parameters.pkButtonColor.raw);
+		};
+		if (context.parameters.pkButtonColorHover.raw) {
+			this.button.style.setProperty('--hover', context.parameters.pkButtonColorHover.raw);
+		};
 	}
 
 	private onButtonClick(event: Event): void {
 		var testss = JSON.parse(this.printable);
 		const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(testss);
+
+		//--[]--//
+		//--[]--//
+
     	const workbook: XLSX.WorkBook = {Sheets: {'data': worksheet}, SheetNames: ['data']};
-    	XLSX.writeFile(workbook,this.filename);
+		XLSX.writeFile(workbook, this.filename);
+	}
+
+	public ex_color() {
+		// STEP 1: Create a new workbook
+		const wb = XLSX.utils.book_new();
+
+		// STEP 2: Create data rows and styles
+		let row = [
+			{ v: "Courier: 24", t: "s", s: { font: { name: "Courier", sz: 24 } } },
+			{ v: "bold & color", t: "s", s: { font: { bold: true, color: { rgb: "FF0000" } } } },
+			{ v: "fill: color", t: "s", s: { fill: { fgColor: { rgb: "E9E9E9" } } } },
+			{ v: "line\nbreak", t: "s", s: { alignment: { wrapText: true } } }
+		];
+
+		// STEP 3: Create worksheet with rows; Add worksheet to workbook
+		const ws = XLSX.utils.aoa_to_sheet([row]);
+		XLSX.utils.book_append_sheet(wb, ws, "readme demo");
+
+		// STEP 4: Write Excel file to browser
+		XLSX.writeFile(wb, "xlsx-js-style-demo.xlsx");
+
+
+		//---
+		var workbook2 = XLSX.utils.book_new();
+
+		var ws2 = XLSX.utils.aoa_to_sheet([
+			["A1", "B1", "C1"],
+			["A2", "B2", "C2"],
+			["A3", "B3", "C3"]
+		])
+		ws2['A1'].s = {
+			font: {
+				name: 'arial',
+				sz: 24,
+				bold: true,
+				color: "#F2F2F2"
+			},
+			fill: {
+				fgColor: { rgb: "E9E9E9" }
+			}
+		}
+		ws2['A3'].s = {
+			font: {
+				name: 'arial',
+				sz: 24,
+				bold: true,
+				color: "#F2F2F2"
+			},
+		}
+
+		XLSX.utils.book_append_sheet(workbook2, ws2, "SheetName");
+		XLSX.writeFile(workbook2, 'FileName.xlsx');
+
+    }
+	public xx() {
+		let arr = [
+			{ firstName: 'Jack', lastName: 'Sparrow', email: 'abc@example.com' },
+			{ firstName: 'Harry', lastName: 'Potter', email: 'abc@example.com', aa:"saas" },
+		];
+
+		let Heading = [['FirstName', 'Last Name', 'Email']];
+
+		//Had to create a new workbook and then add the header
+		const wb = XLSX.utils.book_new();
+		const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet([]);
+		XLSX.utils.sheet_add_aoa(ws, Heading);
+
+		//Starting in the second row to avoid overriding and skipping headers
+		XLSX.utils.sheet_add_json(ws, arr, { origin: 'A2', skipHeader: true });
+
+		XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+		XLSX.writeFile(wb, 'filename2.xlsx');
 	}
 
 	/** 
