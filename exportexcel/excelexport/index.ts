@@ -11,6 +11,8 @@ export class excelexport implements ComponentFramework.StandardControl<IInputs, 
 	private filename:string;
 	private _notifyOutputChanged: () => void;
 	private printable:string;
+	private excel_style:string;
+	private excel_header: string;
 	private testss:JSON;
 
 	/**
@@ -143,17 +145,30 @@ export class excelexport implements ComponentFramework.StandardControl<IInputs, 
 		if (context.parameters.pkButtonColorHover.raw) {
 			this.button.style.setProperty('--hover', context.parameters.pkButtonColorHover.raw);
 		};
+
+		//solution v2.1
+		this.excel_header = context.parameters.pkExcelHeader.raw!;
+		this.excel_style = context.parameters.pkExcelStyle.raw!;
 	}
 
 	private onButtonClick(event: Event): void {
-		var testss = JSON.parse(this.printable);
-		const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(testss);
+		if (this.excel_header && this.excel_style) {
+			let row2 = JSON.parse(this.excel_style)
+			let Heading = [JSON.parse(this.excel_header)];
 
-		//--[]--//
-		//--[]--//
+			const wb = XLSX.utils.book_new();
+			const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet([]);
 
-    	const workbook: XLSX.WorkBook = {Sheets: {'data': worksheet}, SheetNames: ['data']};
-		XLSX.writeFile(workbook, this.filename);
+			XLSX.utils.sheet_add_aoa(ws, Heading);
+			XLSX.utils.sheet_add_json(ws, row2, { origin: 'A2', skipHeader: true });
+			XLSX.utils.book_append_sheet(wb, ws, 'FailSheet');
+			XLSX.writeFile(wb, this.filename);
+		} else {
+			var testss = JSON.parse(this.printable);
+			const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(testss);
+			const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
+			XLSX.writeFile(workbook, this.filename);
+        }
 	}
 
 	public ex_color() {
@@ -228,7 +243,89 @@ export class excelexport implements ComponentFramework.StandardControl<IInputs, 
 
 		XLSX.writeFile(wb, 'filename2.xlsx');
 	}
+	public export_but_not_have_header() {
+		// STEP 1: Create a new workbook
+		const wb = XLSX.utils.book_new();
 
+		// STEP 2: Create data rows and styles
+		let row = [
+			{ v: "Courier: 24", t: "s", s: { font: { name: "Courier", sz: 24 } } },
+			{ v: "bold & color", t: "s", s: { font: { bold: true, color: { rgb: "FF0000" } } } },
+			{ v: "fill: color", t: "s", s: { fill: { fgColor: { rgb: "E9E9E9" } } } },
+			{ v: "line\nbreak", t: "s", s: { alignment: { wrapText: true } } }
+		];
+
+		let row2 = [
+			[
+				{ v: "Courier: 24", t: "s", s: { font: { name: "Courier", sz: 24 } } },
+				{ v: "bold & color", t: "s", s: { font: { bold: true, color: { rgb: "FF0000" } } } },
+			],
+			[
+				{ v: "2: 24", t: "s", s: { font: { name: "Courier", sz: 24 } } },
+				{ v: "4444 & color", t: "s", s: { font: { bold: true, color: { rgb: "FF0000" } } } },
+			],
+		]
+
+		let Heading = [['FirstName', 'Last Name']];
+
+		// STEP 3: Create worksheet with rows; Add worksheet to workbook
+		const ws = XLSX.utils.aoa_to_sheet(row2);
+		XLSX.utils.book_append_sheet(wb, ws, "readme demo");
+
+		// STEP 4: Write Excel file to browser
+		XLSX.writeFile(wb, "xlsx-js-style-demo.xlsx");
+		console.log(row2)
+		console.log('---------------------')
+		console.log(ws)
+		console.log('---------------------')
+		console.log(wb)
+		console.log('---------------------')
+	}
+	public export_have_header() {
+		// STEP 1: Create a new workbook
+		const wb = XLSX.utils.book_new();
+
+		// STEP 2: Create data rows and styles
+
+		let row2 = [
+			[
+				{ v: "Courier: 24", t: "s", s: { font: { name: "Courier", sz: 24 } } },
+				{ v: "bold & color", t: "s", s: { font: { bold: true, color: { rgb: "FF0000" } } } },
+			],
+			[
+				{ v: "2: 24", t: "s", s: { font: { name: "Courier", sz: 24 } } },
+				{ v: "4444 & color", t: "s", s: { fill: { fgColor: { rgb: "E9E9E9" } } } },
+			],
+		]
+
+		let Heading = [['FirstName', 'Last Name']];
+
+		// STEP 3: Create worksheet with rows; Add worksheet to workbook
+		//const ws = XLSX.utils.aoa_to_sheet(row2);
+		//XLSX.utils.book_append_sheet(wb, ws, "readme demo");
+
+
+		//Had to create a new workbook and then add the header
+		//const wb = XLSX.utils.book_new();
+		const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet([]);
+		XLSX.utils.sheet_add_aoa(ws, Heading);
+
+		//Starting in the second row to avoid overriding and skipping headers
+		XLSX.utils.sheet_add_json(ws, row2, { origin: 'A2', skipHeader: true });
+
+		XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+		//XLSX.writeFile(wb, 'filename2.xlsx');
+
+		// STEP 4: Write Excel file to browser
+		XLSX.writeFile(wb, "header.xlsx");
+		console.log(row2)
+		console.log('---------------------')
+		console.log(ws)
+		console.log('---------------------')
+		console.log(wb)
+		console.log('---------------------')
+	}
 	/** 
 	 * It is called by the framework prior to a control receiving new data. 
 	 * @returns an object based on nomenclature defined in manifest, expecting object[s] for property marked as “bound” or “output”
