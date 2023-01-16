@@ -12,6 +12,8 @@ export class excelexport implements ComponentFramework.StandardControl<IInputs, 
 	private _notifyOutputChanged: () => void;
 	private printable:string;
 	private excel_style:string;
+	private excel_rc: string;
+	private excel_caption: string;
 	private excel_header: string;
 	private testss:JSON;
 
@@ -149,25 +151,45 @@ export class excelexport implements ComponentFramework.StandardControl<IInputs, 
 		//solution v2.1
 		this.excel_header = context.parameters.pkExcelHeader.raw!;
 		this.excel_style = context.parameters.pkExcelStyle.raw!;
+
+		//solution v3
+		this.excel_rc = context.parameters.pkExcelRowAndCol.raw!;
+		this.excel_caption = context.parameters.pkExcelCaption.raw!;
 	}
 
 	private onButtonClick(event: Event): void {
-		if (this.excel_header && this.excel_style) {
+		if (this.excel_rc) {
+			let rc = this.excel_rc.split(',')
 			let row2 = JSON.parse(this.excel_style)
 			let Heading = [JSON.parse(this.excel_header)];
+			let caption = JSON.parse(this.excel_caption);
 
 			const wb = XLSX.utils.book_new();
 			const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet([]);
 
-			XLSX.utils.sheet_add_aoa(ws, Heading);
-			XLSX.utils.sheet_add_json(ws, row2, { origin: 'A2', skipHeader: true });
-			XLSX.utils.book_append_sheet(wb, ws, 'FailSheet');
+			XLSX.utils.sheet_add_aoa(ws, caption, { origin: { r: parseInt(rc[0]), c: parseInt(rc[1]) } }); //น่าจะตรงนี้นะ
+			XLSX.utils.sheet_add_aoa(ws, Heading, { origin: { r: parseInt(rc[2]), c: parseInt(rc[3]) } });
+			XLSX.utils.sheet_add_json(ws, row2, { origin: { r: parseInt(rc[4]), c: parseInt(rc[5]) } , skipHeader: true });
+			XLSX.utils.book_append_sheet(wb, ws, 'SheetCaption');
 			XLSX.writeFile(wb, this.filename);
 		} else {
-			var testss = JSON.parse(this.printable);
-			const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(testss);
-			const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
-			XLSX.writeFile(workbook, this.filename);
+			if (this.excel_header && this.excel_style) {
+				let row2 = JSON.parse(this.excel_style)
+				let Heading = [JSON.parse(this.excel_header)];
+
+				const wb = XLSX.utils.book_new();
+				const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet([]);
+
+				XLSX.utils.sheet_add_aoa(ws, Heading);
+				XLSX.utils.sheet_add_json(ws, row2, { origin: 'A2', skipHeader: true });
+				XLSX.utils.book_append_sheet(wb, ws, 'FailSheet');
+				XLSX.writeFile(wb, this.filename);
+			} else {
+				var testss = JSON.parse(this.printable);
+				const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(testss);
+				const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
+				XLSX.writeFile(workbook, this.filename);
+			}
         }
 	}
 
@@ -242,6 +264,62 @@ export class excelexport implements ComponentFramework.StandardControl<IInputs, 
 		XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
 
 		XLSX.writeFile(wb, 'filename2.xlsx');
+	}
+	public example_2() {
+		let arr = [
+			{ firstName: '1', lastName: '5011111', email: 'xxxxxx' },
+			{ firstName: '2', lastName: '5042424', email: 'yyyyy' },
+		];
+
+		let Heading = [['No.', 'รหัสทรัพย์สิน', 'ชื่อทรัพย์สิน']];
+
+		//Had to create a new workbook and then add the header
+		const wb = XLSX.utils.book_new();
+
+		/* Initial row */
+		var ws = XLSX.utils.aoa_to_sheet([]);
+
+		/* Write data starting at A2 */
+		let arr_header = [
+			["รายการทรัพย์สิน","พิทักษ์ รัชดา"],
+			["ข้อมูล ณ วันที่","1/10/2023"],
+			["จำนวนรายการทรัพย์สินทั้งหมด", "11 รายการ"]
+		]
+		let test_input = '[["รายการทรัพย์สิน","พิทักษ์ รัชดา"],["xxx","yyy"]]'
+		XLSX.utils.sheet_add_aoa(ws, arr_header, { origin: { r: 0, c: 0 } });
+
+		//XLSX.utils.sheet_add_aoa(ws, Heading, { origin: 'A5' });
+		//XLSX.utils.sheet_add_json(ws, arr, { origin: 'A6', skipHeader: true });
+
+		XLSX.utils.sheet_add_aoa(ws, Heading, { origin: { r: 4, c: 0 } });
+		XLSX.utils.sheet_add_json(ws, arr, { origin: { r: 5, c: 0 }, skipHeader: true });
+
+		XLSX.utils.book_append_sheet(wb, ws, 'example_2');
+
+		XLSX.writeFile(wb, 'example_2.xlsx');
+	}
+
+	//The example worksheet can be built up in the order A1:G1, A2:B4, E2:G4, A5:G5:
+	public example_１() {
+		
+		//Had to create a new workbook and then add the header
+		const wb = XLSX.utils.book_new();
+
+		/* Initial row */
+		var ws = XLSX.utils.aoa_to_sheet(["SheetJS".split("")]);
+
+		/* Write data starting at A2 */
+		XLSX.utils.sheet_add_aoa(ws, [[1, 2], [2, 3], [3, 4]], { origin: "A2" });
+
+		/* Write data starting at E2 */
+		XLSX.utils.sheet_add_aoa(ws, [[5, 6, 7], [6, 7, 8], [7, 8, 9]], { origin: { r: 5, c: 8 } });
+
+		/* Append row */
+		XLSX.utils.sheet_add_aoa(ws, [[14, 15, 16, 17, 18, 19, 10]], { origin: -1 });
+
+		XLSX.utils.book_append_sheet(wb, ws, 'example_1');
+
+		XLSX.writeFile(wb, 'example_1.xlsx');
 	}
 	public export_but_not_have_header() {
 		// STEP 1: Create a new workbook

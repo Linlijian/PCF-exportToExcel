@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest>
-  <control namespace="contoso" constructor="excelexport" version="2.1.0" display-name-key="excelexport" description-key="excelexport description" control-type="standard">
+  <control namespace="contoso" constructor="excelexport" version="3.1.0" display-name-key="excelexport" description-key="excelexport description" control-type="standard">
     <!-- property node identifies a specific, configurable piece of data that the control expects from CDS -->
     <property name="pkJsonformatData" display-name-key="PikunJsonformatData" description-key="PikunJsonformatData" of-type="SingleLine.Text" usage="bound" required="true" />
     <property name="pkButtonText" display-name-key="PikunButtonText" description-key="PikunButtonText" of-type="SingleLine.Text" usage="bound" required="true" default-value = "Export to Excel" />
@@ -18,6 +18,10 @@
 
     <property name="pkExcelStyle" display-name-key="PikunExcelStyle" description-key="PikunExcelStyle" of-type="SingleLine.Text" usage="bound" required="true" />
     <property name="pkExcelHeader" display-name-key="PikunExcelHeader" description-key="PikunExcelHeader" of-type="SingleLine.Text" usage="bound" required="true" />
+    
+    <!--v3.0-->
+    <property name="pkExcelRowAndCol" display-name-key="PikunExcelRowAndCol" description-key="PikunExcelRowAndCol" of-type="SingleLine.Text" usage="bound" required="true" />
+    <property name="pkExcelCaption" display-name-key="PikunExcelCaption" description-key="PikunExcelCaption" of-type="SingleLine.Text" usage="bound" required="true" />
 
     <!-- 
       Property node's of-type attribute can be of-type-group attribute. 
